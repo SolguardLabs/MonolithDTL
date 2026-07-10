@@ -1,0 +1,20 @@
+{
+  "name": "monolithdtl",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Go DTL settlement monolith CTF with TypeScript integration tests.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node scripts/build.mjs && node --test \"tests/node/*.test.ts\"",
+    "ci": "node scripts/build.mjs && node --test \"tests/node/*.test.ts\"",
+    "loc": "node scripts/check-loc.mjs"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.3"
+  }
+}
+
