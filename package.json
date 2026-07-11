@@ -6,8 +6,8 @@
   "description": "Go DTL settlement monolith CTF with TypeScript integration tests.",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node scripts/build.mjs && node --test \"tests/node/*.test.ts\"",
-    "ci": "node scripts/build.mjs && node --test \"tests/node/*.test.ts\"",
+    "test": "node scripts/build.mjs && node --test tests/node/*.test.ts",
+    "ci": "node scripts/build.mjs && node --test tests/node/*.test.ts",
     "loc": "node scripts/check-loc.mjs"
   },
   "engines": {
