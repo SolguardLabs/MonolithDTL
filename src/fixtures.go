@@ -1,6 +1,6 @@
 package main
 
-type LabContext struct {
+type ProtocolContext struct {
 	Ledger      *Ledger
 	Debt        *DebtEngine
 	Operators   *OperatorRegistry
@@ -11,7 +11,7 @@ type LabContext struct {
 	Auditor     *Auditor
 }
 
-func NewLabContext() *LabContext {
+func NewProtocolContext() *ProtocolContext {
 	ledger := NewLedger("monolith-local-settlement")
 	seedAssets(ledger)
 	seedAccounts(ledger)
@@ -21,7 +21,7 @@ func NewLabContext() *LabContext {
 	vaults := NewVaultBook(ledger, debt, operators)
 	routes := NewRouteBook(ledger, debt, operators)
 	redemptions := NewRedemptionQueue(ledger, vaults)
-	ctx := &LabContext{
+	ctx := &ProtocolContext{
 		Ledger:      ledger,
 		Debt:        debt,
 		Operators:   operators,
@@ -66,14 +66,14 @@ func seedAccounts(ledger *Ledger) {
 	_ = ledger.Credit(ProductSystem, "genesis", "insurance", "mUSD", 750_000_000, "genesis", "genesis reserve")
 }
 
-func seedOperators(ctx *LabContext) {
+func seedOperators(ctx *ProtocolContext) {
 	_, _ = ctx.Operators.Register("op-alpha", "op-alpha-account", "Alpha Settlement", 6_000_000_000, "tier-1", ProductEscrow, ProductVault, ProductRoute)
 	_, _ = ctx.Operators.Register("op-beta", "op-beta-account", "Beta Redemption", 3_000_000_000, "tier-2", ProductVault, ProductRedemption, ProductRoute)
 	_ = ctx.Operators.Authorize("op-alpha", ProductRedemption, 8_000)
 	_ = ctx.Operators.Authorize("op-beta", ProductEscrow, 4_000)
 }
 
-func seedVaults(ctx *LabContext) {
+func seedVaults(ctx *ProtocolContext) {
 	_, _ = ctx.Vaults.Create("vault-usd-core", "mUSD", "reserve-vault-usd", "vUSD", 30)
 }
 
@@ -89,7 +89,7 @@ func mustRoute(_ *RoutePlan, err error) {
 	must(err)
 }
 
-func runCommonBootstrap(ctx *LabContext) {
+func runCommonBootstrap(ctx *ProtocolContext) {
 	must(ctx.Vaults.Deposit("vault-usd-core", "alice", 1_000_000_000, "alice-deposit-001"))
 	must(ctx.Vaults.Deposit("vault-usd-core", "carol", 1_400_000_000, "carol-deposit-001"))
 	mustRoute(ctx.Routes.Create("route-bootstrap-001", "bob", "carol", "mUSD", 120_000_000, 118_000_000, 60, "op-alpha"))

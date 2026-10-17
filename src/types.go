@@ -72,11 +72,11 @@ type GlobalDebtView struct {
 }
 
 type LocalSolvency struct {
-	Product       ProductKind `json:"product"`
-	ProductID     string      `json:"product_id"`
-	Account       string      `json:"account"`
-	Asset         string      `json:"asset"`
-	Obligation    Amount      `json:"obligation"`
+	Product        ProductKind `json:"product"`
+	ProductID      string      `json:"product_id"`
+	Account        string      `json:"account"`
+	Asset          string      `json:"asset"`
+	Obligation     Amount      `json:"obligation"`
 	Collateral     Amount      `json:"collateral"`
 	Settled        Amount      `json:"settled"`
 	Redeemed       Amount      `json:"redeemed"`
@@ -95,8 +95,8 @@ type LocalDebtView struct {
 	Asset       string      `json:"asset"`
 	Outstanding Amount      `json:"outstanding"`
 	Obligation  Amount      `json:"obligation"`
-	Settled      Amount      `json:"settled"`
-	Collateral   Amount      `json:"collateral"`
+	Settled     Amount      `json:"settled"`
+	Collateral  Amount      `json:"collateral"`
 	State       string      `json:"state"`
 }
 
@@ -171,8 +171,8 @@ type VaultPosition struct {
 	Account       string `json:"account"`
 	Shares        Amount `json:"shares"`
 	PrincipalDebt Amount `json:"principal_debt"`
-	AccruedFees    Amount `json:"accrued_fees"`
-	LastAction     string `json:"last_action"`
+	AccruedFees   Amount `json:"accrued_fees"`
+	LastAction    string `json:"last_action"`
 }
 
 type RouteLeg struct {
@@ -188,24 +188,24 @@ type RouteLeg struct {
 }
 
 type RoutePlan struct {
-	ID              string     `json:"id"`
-	SourceAccount   string     `json:"source_account"`
-	Destination      string     `json:"destination"`
-	Asset            string     `json:"asset"`
-	Notional         Amount     `json:"notional"`
-	MinOut           Amount     `json:"min_out"`
-	SlippageBps      int        `json:"slippage_bps"`
-	OperatorID       string     `json:"operator_id"`
-	Legs             []RouteLeg `json:"legs"`
-	Status           string     `json:"status"`
-	SettledAmount    Amount     `json:"settled_amount"`
-	RejectedReason   string     `json:"rejected_reason,omitempty"`
-	CreatedAt        int64      `json:"created_at"`
-	SettledAt         int64      `json:"settled_at"`
+	ID             string     `json:"id"`
+	SourceAccount  string     `json:"source_account"`
+	Destination    string     `json:"destination"`
+	Asset          string     `json:"asset"`
+	Notional       Amount     `json:"notional"`
+	MinOut         Amount     `json:"min_out"`
+	SlippageBps    int        `json:"slippage_bps"`
+	OperatorID     string     `json:"operator_id"`
+	Legs           []RouteLeg `json:"legs"`
+	Status         string     `json:"status"`
+	SettledAmount  Amount     `json:"settled_amount"`
+	RejectedReason string     `json:"rejected_reason,omitempty"`
+	CreatedAt      int64      `json:"created_at"`
+	SettledAt      int64      `json:"settled_at"`
 }
 
 type RedemptionRequest struct {
-	ID             string      `json:"id"`
+	ID            string      `json:"id"`
 	Product       ProductKind `json:"product"`
 	ProductID     string      `json:"product_id"`
 	Account       string      `json:"account"`
@@ -231,47 +231,47 @@ type ReconciliationLine struct {
 type InvariantReport struct {
 	LedgerNonNegative        bool `json:"ledger_non_negative"`
 	LocalSolvencyNonNegative bool `json:"local_solvency_non_negative"`
-	OperatorsWithinLimit    bool `json:"operators_within_limit"`
-	RoutesConserved         bool `json:"routes_conserved"`
-	ProductsHaveLocalState  bool `json:"products_have_local_state"`
-	GlobalDebtMatchesLocal  bool `json:"global_debt_matches_local"`
-	VaultRedeemsLocalDebt   bool `json:"vault_redeems_local_debt"`
+	OperatorsWithinLimit     bool `json:"operators_within_limit"`
+	RoutesConserved          bool `json:"routes_conserved"`
+	ProductsHaveLocalState   bool `json:"products_have_local_state"`
+	ObligationsReconciled    bool `json:"obligations_reconciled"`
+	RedemptionsWithinPolicy  bool `json:"redemptions_within_policy"`
 }
 
 type RiskReport struct {
-	ExecutedEscrows      int    `json:"executed_escrows"`
-	ExecutedRoutes       int    `json:"executed_routes"`
-	ProcessedRedemptions int    `json:"processed_redemptions"`
-	RejectedRedemptions  int    `json:"rejected_redemptions"`
-	GlobalDebt           Amount `json:"global_debt"`
-	LocalDebt            Amount `json:"local_debt"`
-	DebtDrift            Amount `json:"debt_drift"`
-	CrossProductDrift    bool   `json:"cross_product_drift"`
-	PhantomDebt          Amount `json:"phantom_debt"`
-	ReserveLeak          Amount `json:"reserve_leak"`
+	ExecutedEscrows        int    `json:"executed_escrows"`
+	ExecutedRoutes         int    `json:"executed_routes"`
+	ProcessedRedemptions   int    `json:"processed_redemptions"`
+	RejectedRedemptions    int    `json:"rejected_redemptions"`
+	GlobalDebt             Amount `json:"global_debt"`
+	LocalDebt              Amount `json:"local_debt"`
+	ReconciliationVariance Amount `json:"reconciliation_variance"`
+	ReconciliationAlert    bool   `json:"reconciliation_alert"`
+	UnmatchedObligations   Amount `json:"unmatched_obligations"`
+	ReserveVariance        Amount `json:"reserve_variance"`
 }
 
 type ScenarioReport struct {
-	Lab             string               `json:"lab"`
-	Scenario        string               `json:"scenario"`
-	NetworkID       string               `json:"network_id"`
-	Clock           int64                `json:"clock"`
-	StateDigest     string               `json:"state_digest"`
-	Assets          []Asset              `json:"assets"`
-	Accounts        []BalanceView        `json:"accounts"`
-	Operators       []OperatorView       `json:"operators"`
-	Escrows         []Escrow             `json:"escrows"`
-	Vaults          []Vault              `json:"vaults"`
-	VaultPositions  []VaultPosition      `json:"vault_positions"`
-	Routes          []RoutePlan          `json:"routes"`
-	Redemptions     []RedemptionRequest  `json:"redemptions"`
-	GlobalDebt      []GlobalDebtView     `json:"global_debt"`
-	LocalDebt       []LocalDebtView      `json:"local_debt"`
-	Reconciliation  []ReconciliationLine `json:"reconciliation"`
-	Events          []Event              `json:"events"`
-	LedgerEntries   []LedgerEntry        `json:"ledger_entries"`
-	Invariants      InvariantReport      `json:"invariants"`
-	Risk            RiskReport           `json:"risk"`
-	Notes           []string             `json:"notes"`
+	Protocol       string               `json:"protocol"`
+	Scenario       string               `json:"scenario"`
+	NetworkID      string               `json:"network_id"`
+	Clock          int64                `json:"clock"`
+	StateDigest    string               `json:"state_digest"`
+	Assets         []Asset              `json:"assets"`
+	Accounts       []BalanceView        `json:"accounts"`
+	Operators      []OperatorView       `json:"operators"`
+	Escrows        []Escrow             `json:"escrows"`
+	Vaults         []Vault              `json:"vaults"`
+	VaultPositions []VaultPosition      `json:"vault_positions"`
+	Routes         []RoutePlan          `json:"routes"`
+	Redemptions    []RedemptionRequest  `json:"redemptions"`
+	GlobalDebt     []GlobalDebtView     `json:"global_debt"`
+	LocalDebt      []LocalDebtView      `json:"local_debt"`
+	Reconciliation []ReconciliationLine `json:"reconciliation"`
+	Events         []Event              `json:"events"`
+	LedgerEntries  []LedgerEntry        `json:"ledger_entries"`
+	Invariants     InvariantReport      `json:"invariants"`
+	Risk           RiskReport           `json:"risk"`
+	Capital        CapitalAssessment    `json:"capital"`
+	Notes          []string             `json:"notes"`
 }
-

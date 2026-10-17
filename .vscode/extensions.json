@@ -1,4 +1,8 @@
 {
-  "recommendations": ["golang.go"]
+  "recommendations": [
+    "golang.go",
+    "esbenp.prettier-vscode",
+    "github.vscode-github-actions",
+    "redhat.vscode-yaml"
+  ]
 }
-

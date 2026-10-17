@@ -9,46 +9,46 @@ type ProductPolicy struct {
 	Product          ProductKind `json:"product"`
 	Enabled          bool        `json:"enabled"`
 	MinCoverageBps   int         `json:"min_coverage_bps"`
-	MaxDriftBps       int         `json:"max_drift_bps"`
+	MaxDriftBps      int         `json:"max_drift_bps"`
 	RedemptionBuffer Amount      `json:"redemption_buffer"`
 	OperatorCapBps   int         `json:"operator_cap_bps"`
 	AllowNetting     bool        `json:"allow_netting"`
 }
 
 type RiskPolicy struct {
-	Products       map[ProductKind]ProductPolicy
-	GlobalDebtCap  Amount
-	DustThreshold  Amount
+	Products        map[ProductKind]ProductPolicy
+	GlobalDebtCap   Amount
+	DustThreshold   Amount
 	StrictReconcile bool
 }
 
 type AdmissionContext struct {
-	Product       ProductKind
-	ProductID     string
-	Account       string
-	Asset         string
-	Amount        Amount
-	LocalDebt     Amount
-	GlobalDebt    Amount
-	Collateral    Amount
-	OperatorID    string
-	RequestedBy   string
-	Operation     string
+	Product     ProductKind
+	ProductID   string
+	Account     string
+	Asset       string
+	Amount      Amount
+	LocalDebt   Amount
+	GlobalDebt  Amount
+	Collateral  Amount
+	OperatorID  string
+	RequestedBy string
+	Operation   string
 }
 
 type AdmissionResult struct {
-	Allowed       bool              `json:"allowed"`
-	Reason        string            `json:"reason"`
-	Product       ProductKind       `json:"product"`
-	ProductID     string            `json:"product_id"`
-	Account       string            `json:"account"`
-	Asset         string            `json:"asset"`
-	Amount        Amount            `json:"amount"`
-	CoverageBps   int               `json:"coverage_bps"`
-	DriftBps      int               `json:"drift_bps"`
-	ObservedDebt  Amount            `json:"observed_debt"`
-	RequiredDebt  Amount            `json:"required_debt"`
-	PolicySnapshot map[string]int    `json:"policy_snapshot"`
+	Allowed        bool           `json:"allowed"`
+	Reason         string         `json:"reason"`
+	Product        ProductKind    `json:"product"`
+	ProductID      string         `json:"product_id"`
+	Account        string         `json:"account"`
+	Asset          string         `json:"asset"`
+	Amount         Amount         `json:"amount"`
+	CoverageBps    int            `json:"coverage_bps"`
+	DriftBps       int            `json:"drift_bps"`
+	ObservedDebt   Amount         `json:"observed_debt"`
+	RequiredDebt   Amount         `json:"required_debt"`
+	PolicySnapshot map[string]int `json:"policy_snapshot"`
 }
 
 func DefaultRiskPolicy() RiskPolicy {
@@ -58,15 +58,15 @@ func DefaultRiskPolicy() RiskPolicy {
 				Product:        ProductEscrow,
 				Enabled:        true,
 				MinCoverageBps: 10_000,
-				MaxDriftBps:     0,
-				OperatorCapBps:  8_000,
-				AllowNetting:    true,
+				MaxDriftBps:    0,
+				OperatorCapBps: 8_000,
+				AllowNetting:   true,
 			},
 			ProductVault: {
 				Product:          ProductVault,
 				Enabled:          true,
 				MinCoverageBps:   12_000,
-				MaxDriftBps:       0,
+				MaxDriftBps:      0,
 				RedemptionBuffer: 1,
 				OperatorCapBps:   7_000,
 				AllowNetting:     false,
@@ -75,22 +75,22 @@ func DefaultRiskPolicy() RiskPolicy {
 				Product:        ProductRoute,
 				Enabled:        true,
 				MinCoverageBps: 10_000,
-				MaxDriftBps:     100,
-				OperatorCapBps:  9_000,
-				AllowNetting:    true,
+				MaxDriftBps:    100,
+				OperatorCapBps: 9_000,
+				AllowNetting:   true,
 			},
 			ProductRedemption: {
 				Product:          ProductRedemption,
 				Enabled:          true,
 				MinCoverageBps:   10_000,
-				MaxDriftBps:       0,
+				MaxDriftBps:      0,
 				RedemptionBuffer: 1,
 				OperatorCapBps:   6_000,
 				AllowNetting:     false,
 			},
 		},
-		GlobalDebtCap:  9_000_000_000,
-		DustThreshold:  10,
+		GlobalDebtCap:   9_000_000_000,
+		DustThreshold:   10,
 		StrictReconcile: false,
 	}
 }
@@ -103,8 +103,8 @@ func (p RiskPolicy) PolicyFor(product ProductKind) ProductPolicy {
 		Product:        product,
 		Enabled:        false,
 		MinCoverageBps: 10_000,
-		MaxDriftBps:     0,
-		OperatorCapBps:  0,
+		MaxDriftBps:    0,
+		OperatorCapBps: 0,
 	}
 }
 
@@ -295,4 +295,3 @@ func PolicyWarnings(policy RiskPolicy) []string {
 	}
 	return warnings
 }
-

@@ -6,9 +6,9 @@ import (
 )
 
 type MetricPoint struct {
-	Name   string            `json:"name"`
+	Name  string            `json:"name"`
 	Value Amount            `json:"value"`
-	Tags   map[string]string `json:"tags"`
+	Tags  map[string]string `json:"tags"`
 }
 
 type TelemetrySnapshot struct {
@@ -63,8 +63,10 @@ func BuildTelemetry(report ScenarioReport) TelemetrySnapshot {
 	metrics := []MetricPoint{
 		metric("risk.local_debt", report.Risk.LocalDebt, "scenario", report.Scenario),
 		metric("risk.global_debt", report.Risk.GlobalDebt, "scenario", report.Scenario),
-		metric("risk.debt_drift", report.Risk.DebtDrift, "scenario", report.Scenario),
-		metric("risk.reserve_leak", report.Risk.ReserveLeak, "scenario", report.Scenario),
+		metric("risk.reconciliation_variance", report.Risk.ReconciliationVariance, "scenario", report.Scenario),
+		metric("risk.reserve_variance", report.Risk.ReserveVariance, "scenario", report.Scenario),
+		metric("capital.required", report.Capital.RequiredCapital, "scenario", report.Scenario),
+		metric("capital.available", report.Capital.AvailableCapital, "scenario", report.Scenario),
 		metric("events.total", Amount(len(report.Events)), "scenario", report.Scenario),
 		metric("redemptions.processed", Amount(report.Risk.ProcessedRedemptions), "scenario", report.Scenario),
 		metric("redemptions.rejected", Amount(report.Risk.RejectedRedemptions), "scenario", report.Scenario),
@@ -93,7 +95,7 @@ func metric(name string, value Amount, tagKey string, tagValue string) MetricPoi
 	return MetricPoint{
 		Name:  name,
 		Value: value,
-		Tags: map[string]string{tagKey: tagValue},
+		Tags:  map[string]string{tagKey: tagValue},
 	}
 }
 
@@ -143,4 +145,3 @@ func HasCriticalEvent(events []Event) bool {
 	}
 	return false
 }
-

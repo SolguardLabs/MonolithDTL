@@ -36,7 +36,7 @@ type SettlementBatch struct {
 	Failure     string           `json:"failure,omitempty"`
 	TotalAmount Amount           `json:"total_amount"`
 	CreatedAt   int64            `json:"created_at"`
-	SettledAt    int64            `json:"settled_at"`
+	SettledAt   int64            `json:"settled_at"`
 }
 
 type SettlementCoordinator struct {
@@ -228,4 +228,3 @@ func BatchDigest(batch SettlementBatch) string {
 	sort.Strings(parts)
 	return Digest(parts...)
 }
-

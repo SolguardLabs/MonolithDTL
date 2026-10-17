@@ -187,4 +187,3 @@ func (b *RouteBook) ExposureByAccount(account string, asset string) Amount {
 	}
 	return total
 }
-

@@ -9,16 +9,17 @@ test("cli lists deterministic public scenarios", () => {
     "escrow-settlement",
     "vault-redemption-guard",
     "route-operator-flow",
-    "cross-product-redemption",
+    "capital-stress",
   ]);
 });
 
 test("baseline emits stable report contract", () => {
   const payload = runScenario("baseline");
   assertCommon(payload, "baseline");
-  assert.equal(payload.invariants.global_debt_matches_local, true);
-  assert.equal(payload.invariants.vault_redeems_local_debt, true);
-  assert.equal(payload.risk.cross_product_drift, false);
+  assert.equal(payload.invariants.obligations_reconciled, true);
+  assert.equal(payload.invariants.redemptions_within_policy, true);
+  assert.equal(payload.risk.reconciliation_alert, false);
+  assert.equal(payload.capital.decision, "open");
 });
 
 test("unknown scenario exits with failure", () => {
@@ -26,4 +27,3 @@ test("unknown scenario exits with failure", () => {
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /unknown scenario/);
 });
-

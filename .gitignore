@@ -1,5 +1,4 @@
 build/
-vulnerability.md
 dist/
 coverage/
 node_modules/

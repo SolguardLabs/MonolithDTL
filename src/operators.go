@@ -166,4 +166,3 @@ func ClampInt(value int, lo int, hi int) int {
 	}
 	return value
 }
-

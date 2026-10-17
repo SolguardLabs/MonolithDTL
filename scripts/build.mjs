@@ -22,11 +22,13 @@ function commandExists(command) {
   if (process.platform === "win32") {
     return run("where.exe", [command]).status === 0;
   }
-  return spawnSync("sh", ["-c", `command -v "${command.replaceAll('"', '\\"')}"`], {
-    cwd: root,
-    encoding: "utf8",
-    stdio: "pipe",
-  }).status === 0;
+  return (
+    spawnSync("sh", ["-c", `command -v "${command.replaceAll('"', '\\"')}"`], {
+      cwd: root,
+      encoding: "utf8",
+      stdio: "pipe",
+    }).status === 0
+  );
 }
 
 if (args.has("--clean")) {
@@ -48,4 +50,3 @@ if (!existsSync(output)) {
   process.exit(1);
 }
 console.log(output);
-
