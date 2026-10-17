@@ -7,7 +7,7 @@ var scenarioNames = []string{
 	"escrow-settlement",
 	"vault-redemption-guard",
 	"route-operator-flow",
-	"cross-product-redemption",
+	"capital-stress",
 }
 
 func ListScenarios() []string {
@@ -26,15 +26,15 @@ func RunScenario(name string) (ScenarioReport, error) {
 		return scenarioVaultRedemptionGuard(), nil
 	case "route-operator-flow":
 		return scenarioRouteOperatorFlow(), nil
-	case "cross-product-redemption":
-		return scenarioCrossProductRedemption(), nil
+	case "capital-stress":
+		return scenarioCapitalStress(), nil
 	default:
 		return ScenarioReport{}, fmt.Errorf("unknown scenario %s", name)
 	}
 }
 
 func scenarioBaseline() ScenarioReport {
-	ctx := NewLabContext()
+	ctx := NewProtocolContext()
 	runCommonBootstrap(ctx)
 	must(ctx.Vaults.Borrow("vault-usd-core", "alice", 250_000_000, "op-alpha", "alice-borrow-001"))
 	must(ctx.Vaults.Repay("vault-usd-core", "alice", 250_000_000, "alice-repay-001"))
@@ -45,7 +45,7 @@ func scenarioBaseline() ScenarioReport {
 }
 
 func scenarioEscrowSettlement() ScenarioReport {
-	ctx := NewLabContext()
+	ctx := NewProtocolContext()
 	runCommonBootstrap(ctx)
 	mustEscrow(ctx.Escrows.Create("escrow-market-001", "alice", "bob", "mUSD", 300_000_000, 4_500_000, "op-alpha", 40))
 	must(ctx.Escrows.Release("escrow-market-001", 180_000_000, "escrow-market-release-001"))
@@ -55,7 +55,7 @@ func scenarioEscrowSettlement() ScenarioReport {
 }
 
 func scenarioVaultRedemptionGuard() ScenarioReport {
-	ctx := NewLabContext()
+	ctx := NewProtocolContext()
 	runCommonBootstrap(ctx)
 	must(ctx.Vaults.Borrow("vault-usd-core", "alice", 700_000_000, "op-alpha", "guard-borrow-001"))
 	ctx.Redemptions.RequestVault("vault-usd-core", "alice", 500_000_000, 250_000_000, "guard-redeem-001")
@@ -63,7 +63,7 @@ func scenarioVaultRedemptionGuard() ScenarioReport {
 }
 
 func scenarioRouteOperatorFlow() ScenarioReport {
-	ctx := NewLabContext()
+	ctx := NewProtocolContext()
 	runCommonBootstrap(ctx)
 	mustEscrow(ctx.Escrows.Create("escrow-route-001", "dave", "bob", "mUSD", 110_000_000, 2_000_000, "op-beta", 80))
 	mustRoute(ctx.Routes.Create("route-operator-001", "dave", "bob", "mUSD", 200_000_000, 195_000_000, 90, "op-alpha"))
@@ -74,13 +74,11 @@ func scenarioRouteOperatorFlow() ScenarioReport {
 	return BuildReport(ctx, "route-operator-flow")
 }
 
-func scenarioCrossProductRedemption() ScenarioReport {
-	ctx := NewLabContext()
+func scenarioCapitalStress() ScenarioReport {
+	ctx := NewProtocolContext()
 	runCommonBootstrap(ctx)
-	must(ctx.Vaults.Deposit("vault-usd-core", "alice", 400_000_000, "alice-cross-extra-deposit"))
-	must(ctx.Vaults.Borrow("vault-usd-core", "alice", 900_000_000, "op-alpha", "cross-vault-borrow"))
-	mustEscrow(ctx.Escrows.Create("escrow-cross-001", "alice", "bob", "mUSD", 650_000_000, 900_000_000, "op-alpha", 50))
-	must(ctx.Escrows.SettleRefund("escrow-cross-001", 650_000_000, "cross-escrow-refund"))
-	ctx.Redemptions.RequestVault("vault-usd-core", "alice", 420_000_000, 150_000_000, "cross-vault-redeem")
-	return BuildReport(ctx, "cross-product-redemption")
+	must(ctx.Vaults.Borrow("vault-usd-core", "alice", 650_000_000, "op-alpha", "stress-vault-borrow"))
+	mustEscrow(ctx.Escrows.Create("escrow-stress-001", "dave", "bob", "mUSD", 420_000_000, 6_000_000, "op-beta", 20))
+	mustRoute(ctx.Routes.Create("route-stress-001", "bob", "carol", "mUSD", 360_000_000, 350_000_000, 120, "op-alpha"))
+	return BuildReport(ctx, "capital-stress")
 }

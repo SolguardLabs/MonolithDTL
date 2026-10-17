@@ -9,7 +9,7 @@ const exeName = process.platform === "win32" ? "monolithdtl.exe" : "monolithdtl"
 const defaultBin = join(root, "build", exeName);
 
 export type ScenarioPayload = {
-  lab: string;
+  protocol: string;
   scenario: string;
   network_id: string;
   clock: number;
@@ -29,6 +29,18 @@ export type ScenarioPayload = {
   ledger_entries: Array<Record<string, any>>;
   invariants: Record<string, any>;
   risk: Record<string, any>;
+  capital: {
+    gross_exposure: number;
+    required_capital: number;
+    available_capital: number;
+    capital_ratio_bps: number;
+    liquidity_coverage_bps: number;
+    concentration_hhi_ppm: number;
+    decision: "open" | "restricted" | "halted";
+    charges: Array<Record<string, any>>;
+    stress_ladder: Array<Record<string, any>>;
+    digest: string;
+  };
   notes: string[];
 };
 
@@ -45,7 +57,9 @@ export function ensureBuilt(): void {
     stdio: "pipe",
   });
   if (result.status !== 0) {
-    throw new Error(["build failed", result.stdout.trim(), result.stderr.trim()].filter(Boolean).join("\n"));
+    throw new Error(
+      ["build failed", result.stdout.trim(), result.stderr.trim()].filter(Boolean).join("\n"),
+    );
   }
 }
 
@@ -91,7 +105,12 @@ export function accountBalance(payload: ScenarioPayload, account: string, asset:
   return row.amount;
 }
 
-export function localDebt(payload: ScenarioPayload, product: string, productId: string, account: string): number {
+export function localDebt(
+  payload: ScenarioPayload,
+  product: string,
+  productId: string,
+  account: string,
+): number {
   const row = payload.local_debt.find(
     (item) => item.product === product && item.product_id === productId && item.account === account,
   );
@@ -100,7 +119,7 @@ export function localDebt(payload: ScenarioPayload, product: string, productId: 
 }
 
 export function assertCommon(payload: ScenarioPayload, scenario: string): void {
-  assert.equal(payload.lab, "MonolithDTL");
+  assert.equal(payload.protocol, "MonolithDTL");
   assert.equal(payload.scenario, scenario);
   assert.equal(payload.network_id, "monolith-local-settlement");
   assert.match(payload.state_digest, /^[0-9a-f]{32}$/);
@@ -115,5 +134,8 @@ export function assertCommon(payload: ScenarioPayload, scenario: string): void {
   assert.equal(payload.invariants.operators_within_limit, true);
   assert.equal(payload.invariants.routes_conserved, true);
   assert.equal(payload.invariants.products_have_local_state, true);
+  assert.match(payload.capital.digest, /^[0-9a-f]{32}$/);
+  assert.ok(payload.capital.gross_exposure > 0);
+  assert.ok(payload.capital.required_capital > 0);
+  assert.equal(payload.capital.stress_ladder.length, 4);
 }
-

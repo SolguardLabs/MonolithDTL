@@ -6,10 +6,10 @@ import (
 	"sort"
 )
 
-func BuildReport(ctx *LabContext, scenario string) ScenarioReport {
+func BuildReport(ctx *ProtocolContext, scenario string) ScenarioReport {
 	redemptions := ctx.Redemptions.Redemptions()
 	report := ScenarioReport{
-		Lab:            "MonolithDTL",
+		Protocol:       "MonolithDTL",
 		Scenario:       scenario,
 		NetworkID:      "monolith-local-settlement",
 		Clock:          ctx.Ledger.Clock(),
@@ -28,6 +28,7 @@ func BuildReport(ctx *LabContext, scenario string) ScenarioReport {
 		LedgerEntries:  ctx.Ledger.Entries(),
 		Invariants:     ctx.Auditor.Invariants(),
 		Risk:           ctx.Auditor.Risk(),
+		Capital:        BuildCapitalAssessment(ctx),
 		Notes:          ctx.Auditor.Notes(scenario),
 	}
 	report.StateDigest = reportDigest(report)
@@ -40,7 +41,7 @@ func EncodeReport(report ScenarioReport) ([]byte, error) {
 
 func reportDigest(report ScenarioReport) string {
 	parts := []string{
-		"lab:" + report.Lab,
+		"protocol:" + report.Protocol,
 		"scenario:" + report.Scenario,
 		"network:" + report.NetworkID,
 		fmt.Sprintf("clock:%d", report.Clock),
@@ -60,6 +61,7 @@ func reportDigest(report ScenarioReport) string {
 	for _, route := range report.Routes {
 		parts = append(parts, fmt.Sprintf("route:%s:%s:%d", route.ID, route.Status, route.SettledAmount))
 	}
+	parts = append(parts, "capital:"+report.Capital.Digest)
 	sort.Strings(parts)
 	return Digest(parts...)
 }
@@ -76,4 +78,3 @@ func PrintScenario(name string) error {
 	fmt.Println(string(data))
 	return nil
 }
-

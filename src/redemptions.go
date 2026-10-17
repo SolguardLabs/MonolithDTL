@@ -96,4 +96,3 @@ func (q *RedemptionQueue) TotalProcessed(asset string) Amount {
 	}
 	return total
 }
-

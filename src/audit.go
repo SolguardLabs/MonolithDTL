@@ -35,11 +35,11 @@ func (a *Auditor) Invariants() InvariantReport {
 	return InvariantReport{
 		LedgerNonNegative:        a.ledger.LedgerNonNegative(),
 		LocalSolvencyNonNegative: a.debt.LocalSolvencyNonNegative(),
-		OperatorsWithinLimit:    a.operators.OperatorsWithinLimit(),
-		RoutesConserved:         a.routes.RoutesConserved(),
-		ProductsHaveLocalState:  a.debt.ProductsHaveLocalState(),
-		GlobalDebtMatchesLocal:  !a.debt.HasCrossProductDrift(),
-		VaultRedeemsLocalDebt:   a.vaults.RedeemsRespectLocalDebt(reds),
+		OperatorsWithinLimit:     a.operators.OperatorsWithinLimit(),
+		RoutesConserved:          a.routes.RoutesConserved(),
+		ProductsHaveLocalState:   a.debt.ProductsHaveLocalState(),
+		ObligationsReconciled:    !a.debt.HasCrossProductDrift(),
+		RedemptionsWithinPolicy:  a.vaults.RedeemsRespectLocalDebt(reds),
 	}
 }
 
@@ -53,16 +53,16 @@ func (a *Auditor) Risk() RiskReport {
 		rejected = a.redemptions.RejectedCount()
 	}
 	return RiskReport{
-		ExecutedEscrows:      a.escrows.ExecutedCount(),
-		ExecutedRoutes:       a.routes.ExecutedCount(),
-		ProcessedRedemptions: processed,
-		RejectedRedemptions:  rejected,
-		GlobalDebt:           global,
-		LocalDebt:            local,
-		DebtDrift:            local - global,
-		CrossProductDrift:    a.debt.HasCrossProductDrift(),
-		PhantomDebt:          a.debt.PhantomDebt(),
-		ReserveLeak:          a.vaults.ReserveLeak(),
+		ExecutedEscrows:        a.escrows.ExecutedCount(),
+		ExecutedRoutes:         a.routes.ExecutedCount(),
+		ProcessedRedemptions:   processed,
+		RejectedRedemptions:    rejected,
+		GlobalDebt:             global,
+		LocalDebt:              local,
+		ReconciliationVariance: local - global,
+		ReconciliationAlert:    a.debt.HasCrossProductDrift(),
+		UnmatchedObligations:   a.debt.PhantomDebt(),
+		ReserveVariance:        a.vaults.ReserveLeak(),
 	}
 }
 
@@ -87,21 +87,21 @@ func (a *Auditor) Notes(scenario string) []string {
 		fmt.Sprintf("local_debt=%d", risk.LocalDebt),
 		fmt.Sprintf("global_debt=%d", risk.GlobalDebt),
 	}
-	if !inv.GlobalDebtMatchesLocal {
-		notes = append(notes, "global debt diverges from product-local obligations")
+	if !inv.ObligationsReconciled {
+		notes = append(notes, "obligation reconciliation requires operator review")
 	}
-	if !inv.VaultRedeemsLocalDebt {
-		notes = append(notes, "vault redemption observed while vault-local debt remains open")
+	if !inv.RedemptionsWithinPolicy {
+		notes = append(notes, "redemption policy exception requires operator review")
 	}
-	if risk.CrossProductDrift {
-		notes = append(notes, "cross-product drift is present")
+	if risk.ReconciliationAlert {
+		notes = append(notes, "reconciliation alert is active")
 	}
 	return notes
 }
 
 func (a *Auditor) Digest(scenario string) string {
 	parts := []string{
-		"lab:MonolithDTL",
+		"protocol:MonolithDTL",
 		"scenario:" + scenario,
 		"ledger:" + a.ledger.SnapshotDigest(),
 	}
@@ -135,4 +135,3 @@ func (a *Auditor) ProductSummary() map[string]Amount {
 		"route":  a.debt.OutstandingByProduct(ProductRoute),
 	}
 }
-

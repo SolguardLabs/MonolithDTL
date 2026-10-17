@@ -45,4 +45,3 @@ func usage() error {
 	fmt.Println("  monolithdtl scenario <name>")
 	return nil
 }
-

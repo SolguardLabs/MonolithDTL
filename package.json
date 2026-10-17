@@ -1,13 +1,18 @@
 {
   "name": "monolithdtl",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Go DTL settlement monolith CTF with TypeScript integration tests.",
+  "description": "Deterministic multi-product settlement and capital-control engine for DTL operations.",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node scripts/build.mjs && node --test tests/node/*.test.ts",
-    "ci": "node scripts/build.mjs && node --test tests/node/*.test.ts",
+    "test": "node scripts/build.mjs && node scripts/run-tests.mjs",
+    "test:go": "go test ./... -count=1",
+    "test:integration": "node scripts/run-tests.mjs",
+    "format:check": "prettier --check .",
+    "scan": "node scripts/scan-public-surface.mjs",
+    "integrity": "node scripts/release-integrity.mjs",
+    "ci": "node scripts/run-ci.mjs",
     "loc": "node scripts/check-loc.mjs"
   },
   "engines": {
@@ -17,4 +22,3 @@
     "prettier": "^3.8.3"
   }
 }
-

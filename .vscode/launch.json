@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "MonolithDTL: baseline",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/src",
+      "args": ["scenario", "baseline"]
+    },
+    {
+      "name": "MonolithDTL: capital stress",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/src",
+      "args": ["scenario", "capital-stress"]
+    }
+  ]
+}

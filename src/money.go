@@ -280,4 +280,3 @@ func CopyProducts(in []ProductKind) []ProductKind {
 	copy(out, in)
 	return out
 }
-

@@ -1,0 +1,36 @@
+name: Release integrity
+
+on:
+  push:
+    branches:
+      - main
+      - production
+      - "release/**"
+    tags:
+      - "v*"
+  pull_request:
+  release:
+    types:
+      - published
+
+concurrency:
+  group: integrity-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Scan public surface
+        run: npm run scan
+      - name: Verify release assets
+        run: npm run integrity
